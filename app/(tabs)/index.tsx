@@ -1,11 +1,6 @@
-import {
-  Text,
-  SafeAreaView,
-  StyleSheet,
-  Platform,
-  StatusBar,
-} from "react-native";
+import { SafeAreaView, StyleSheet, Platform, StatusBar } from "react-native";
 import WebView from "react-native-webview";
+import { router } from "expo-router";
 
 const styles = StyleSheet.create({
   safearea: {
@@ -21,6 +16,24 @@ const HomeScreen = () => {
         source={{ uri: "https://m.naver.com" }}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        onShouldStartLoadWithRequest={(request) => {
+          console.log("Home -request", request);
+
+          if (
+            request.url.startsWith("https://m.naver.com") ||
+            request.mainDocumentURL?.startsWith("https://m.naver.com")
+          ) {
+            return true;
+          }
+          if (request.url != null && request.url.startsWith("https://")) {
+            router.navigate({
+              pathname: "browser",
+            });
+            return false;
+          }
+
+          return true;
+        }}
       />
     </SafeAreaView>
   );
