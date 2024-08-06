@@ -17,8 +17,6 @@ const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         onShouldStartLoadWithRequest={(request) => {
-          console.log("Home -request", request);
-
           if (
             request.url.startsWith("https://m.naver.com") ||
             request.mainDocumentURL?.startsWith("https://m.naver.com")
@@ -28,6 +26,7 @@ const HomeScreen = () => {
           if (request.url != null && request.url.startsWith("https://")) {
             router.navigate({
               pathname: "browser",
+              params: { initialUrl: request.url },
             });
             return false;
           }
