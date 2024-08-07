@@ -5,10 +5,11 @@ import {
   StatusBar,
   SafeAreaView,
   View,
+  Animated,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import WebView from "react-native-webview";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 
 const styles = StyleSheet.create({
   safearea: {
@@ -25,6 +26,14 @@ const styles = StyleSheet.create({
   urlText: {
     color: "white",
   },
+  loadingBarBackground: {
+    height: 3,
+    backgroundColor: "white",
+  },
+  loadingBar: {
+    height: "100%",
+    backgroundColor: "green",
+  },
 });
 
 const BrowserScreen = () => {
@@ -37,14 +46,34 @@ const BrowserScreen = () => {
     [url],
   );
 
+  const progressAnim = useRef(new Animated.Value(0)).current;
+
   return (
     <SafeAreaView style={styles.safearea}>
       <View style={styles.urlContainer}>
         <Text style={styles.urlText}>{urlTitle}</Text>
       </View>
+      <View style={styles.loadingBarBackground}>
+        <Animated.View
+          style={[
+            styles.loadingBar,
+            {
+              width: progressAnim.interpolate({
+                // 0 ~ 1 로 들어오는 progress 상태를 0% ~ 100% 로 표출
+                inputRange: [0, 1],
+                outputRange: ["0%", "100%"],
+              }),
+            },
+          ]}
+        />
+      </View>
       <WebView
         source={{ uri: initialUrl }}
         onNavigationStateChange={(event) => setUrl(event.url)}
+        onLoadProgress={(event) =>
+          progressAnim.setValue(event.nativeEvent.progress)
+        }
+        onLoadEnd={() => progressAnim.setValue(0)}
       />
     </SafeAreaView>
   );
