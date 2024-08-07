@@ -6,10 +6,12 @@ import {
   SafeAreaView,
   View,
   Animated,
+  TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import WebView from "react-native-webview";
 import { useMemo, useState, useRef } from "react";
+import { router } from "expo-router";
 
 const styles = StyleSheet.create({
   safearea: {
@@ -33,6 +35,31 @@ const styles = StyleSheet.create({
   loadingBar: {
     height: "100%",
     backgroundColor: "green",
+  },
+  navigator: {
+    backgroundColor: "black",
+    flexDirection: "row",
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    justifyContent: "space-between",
+  },
+  button: {
+    width: 30,
+    height: 30,
+    padding: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  naverIconOutline: {
+    borderWidth: 1,
+    borderColor: "white",
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  naverIconText: {
+    color: "white",
   },
 });
 
@@ -75,6 +102,18 @@ const BrowserScreen = () => {
         }
         onLoadEnd={() => progressAnim.setValue(0)}
       />
+      <View style={styles.navigator}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            router.back();
+          }}
+        >
+          <View style={styles.naverIconOutline}>
+            <Text style={styles.naverIconText}>N</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
