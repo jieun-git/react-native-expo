@@ -12,6 +12,7 @@ import { useLocalSearchParams } from "expo-router";
 import WebView from "react-native-webview";
 import { useMemo, useState, useRef } from "react";
 import { router } from "expo-router";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const styles = StyleSheet.create({
   safearea: {
@@ -63,11 +64,38 @@ const styles = StyleSheet.create({
   },
 });
 
+const NavButton = ({
+  iconName,
+  disabled,
+  onPress,
+}: {
+  iconName: keyof typeof MaterialCommunityIcons.glyphMap;
+  disabled?: boolean;
+  onPress?: () => void;
+}) => {
+  const color = disabled ? "gray" : "white";
+
+  return (
+    <TouchableOpacity
+      style={styles.button}
+      disabled={disabled}
+      onPress={onPress}
+    >
+      <MaterialCommunityIcons name={iconName} color={color} size={24} />
+    </TouchableOpacity>
+  );
+};
+
 const BrowserScreen = () => {
   const params = useLocalSearchParams();
   const initialUrl = params.initialUrl as string;
 
+  const webViewRef = useRef<WebView | null>(null);
+
   const [url, setUrl] = useState(initialUrl);
+  const [canGoBack, setCanGoBack] = useState(false);
+  const [canGoForward, setCanGoForward] = useState(false);
+
   const urlTitle = useMemo(
     () => url.replace("https://", "").split("/")[0],
     [url],
@@ -95,8 +123,13 @@ const BrowserScreen = () => {
         />
       </View>
       <WebView
+        ref={webViewRef}
         source={{ uri: initialUrl }}
-        onNavigationStateChange={(event) => setUrl(event.url)}
+        onNavigationStateChange={(event) => {
+          setUrl(event.url);
+          setCanGoBack(event.canGoBack);
+          setCanGoForward(event.canGoForward);
+        }}
         onLoadProgress={(event) =>
           progressAnim.setValue(event.nativeEvent.progress)
         }
@@ -113,6 +146,20 @@ const BrowserScreen = () => {
             <Text style={styles.naverIconText}>N</Text>
           </View>
         </TouchableOpacity>
+        <NavButton
+          iconName="arrow-left"
+          disabled={!canGoBack}
+          onPress={() => {
+            webViewRef.current?.goBack();
+          }}
+        />
+        <NavButton
+          iconName="arrow-right"
+          disabled={!canGoForward}
+          onPress={() => {
+            webViewRef.current?.goForward();
+          }}
+        />
       </View>
     </SafeAreaView>
   );
