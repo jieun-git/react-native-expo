@@ -160,6 +160,12 @@ const BrowserScreen = () => {
             webViewRef.current?.goForward();
           }}
         />
+        <NavButton
+          iconName="refresh"
+          onPress={() => {
+            webViewRef.current?.reload();
+          }}
+        />
       </View>
     </SafeAreaView>
   );
